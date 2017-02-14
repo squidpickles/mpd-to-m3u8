@@ -18,7 +18,7 @@ ffmpeg -y -i "input.mkv" -c:v libx264 -x264opts 'keyint=24:min-keyint=24:no-scen
 # 128k AAC audio only
 ffmpeg -y -i "input.mkv" -vn -c:a libfdk_aac -b:a 128k "audio_128k.m4a"
 
-MP4Box -dash 2000 -rap -frag-rap -url-template -dash-profile onDemand -segment-name 'dash_$RepresentationID$' \
+MP4Box -dash 2000 -rap -frag-rap -url-template -dash-profile onDemand -segment-name 'segment_$RepresentationID$' \
   -out playlist.mpd "intermed_4800k.mp4" "intermed_2400k.mp4" ... "audio_128k.m4a"
 ```
 Now you create HLS playlists for each quality level:
@@ -30,7 +30,7 @@ ffmpeg -i audio_128k.m4a -acodec copy -vcodec copy -hls_time 2 -hls_flags single
 
 Finally, you transform the master playlist using the XSLT file in this repo:
 ```bash
-xsltproc mpd-to-m3u8.xsl playlist.mpd > playlist.m3u8
+xsltproc --stringparam run_id "segment" mpd-to-m3u8.xsl playlist.mpd > playlist.m3u8
 ```
 
 Happy streaming!
